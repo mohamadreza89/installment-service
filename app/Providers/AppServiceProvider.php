@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Contracts\InstallmentServiceInterface;
+use App\Services\InstallmentService;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +26,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Schema::defaultStringLength(191);
+
+        $this->app->singleton(InstallmentServiceInterface::class, InstallmentService::class);
     }
 }
