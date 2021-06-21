@@ -23,13 +23,14 @@ class InstallmentService implements InstallmentServiceInterface
         foreach ($this->installmentsArray($orderId) as $installment) {
             $installmentObject = $this->createInstallment($orderId, ++$i);
 
+            // first installment consists of two fixed items : VAT and delivery
             if ($installmentObject->turn ==1){
                 $this->createInstallmentDetail($installmentObject, config("accounting.VAT"), "vat");
                 $this->createInstallmentDetail($installmentObject, config("accounting.delivery"), "delivery");
 
             }
 
-            // Here $installment may be an array of prices and each price
+            // Here $installment is an array of prices and each price
             // is for an orderItem.
             // By iterating through installment prices we create installmentDetail
             // for each price

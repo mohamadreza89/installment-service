@@ -48,7 +48,7 @@ class OrderingTest extends TestCase
      *
      * @return void
      */
-    public function test_the_total_returning_price_method_of_order_item_model()
+    public function test_the_total_returning_price_method_of_order_item_model_must_be_correct()
     {
         $this->assertEquals(1.2*2000000*2 , $this->orderItem1->totalReturningPrice());
         $this->assertEquals(1.2*3000000 , $this->orderItem2->totalReturningPrice());
