@@ -15,6 +15,16 @@ class CreateInstallmentDetailsTable extends Migration
     {
         Schema::create('installment_details', function (Blueprint $table) {
             $table->id();
+
+            $table->bigInteger("installment_id")->unsigned();
+            $table->foreign("installment_id")->references("id")->on("installments");
+
+            $table->string("installment_type")->nullable();
+            $table->bigInteger("main")->nullable();
+            $table->bigInteger("vat")->nullable();
+            $table->bigInteger("delivery")->nullable();
+            $table->bigInteger("price")->nullable();
+            $table->bigInteger("store_id")->nullable();
             $table->timestamps();
         });
     }

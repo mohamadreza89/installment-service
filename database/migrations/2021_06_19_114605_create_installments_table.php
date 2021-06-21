@@ -15,6 +15,17 @@ class CreateInstallmentsTable extends Migration
     {
         Schema::create('installments', function (Blueprint $table) {
             $table->id();
+
+            $table->bigInteger("order_id")->unsigned();
+            $table->foreign("order_id")->on("orders")->references("id");
+
+            //$table->bigInteger("total_price");
+            $table->string("period_date")->nullable();
+
+            $table->integer("turn");
+
+            $table->enum("status", ["unpaid", "paid"])->default("unpaid");
+            $table->dateTime("paid_at")->nullable();
             $table->timestamps();
         });
     }

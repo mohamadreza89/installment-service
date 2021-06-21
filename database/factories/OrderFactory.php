@@ -18,11 +18,12 @@ class OrderFactory extends Factory
      * Define the model's default state.
      *
      * @return array
+     * @throws \Exception
      */
     public function definition()
     {
         return [
-            //
+            "user_id" => random_int(1,20)
         ];
     }
 }

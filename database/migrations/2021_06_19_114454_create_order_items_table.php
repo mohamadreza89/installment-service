@@ -15,6 +15,13 @@ class CreateOrderItemsTable extends Migration
     {
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger("order_id")->unsigned();
+            $table->foreign("order_id")->on("orders")->references("id");
+
+            $table->bigInteger("store_id");
+            $table->integer("quantity");
+            $table->bigInteger("price");
+            $table->integer("month_count");
             $table->timestamps();
         });
     }
