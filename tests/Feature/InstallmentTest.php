@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 
 class InstallmentTest extends TestCase
@@ -50,8 +51,11 @@ class InstallmentTest extends TestCase
 
     }
 
-    public function test_sum_of_installment_prices_must_be_equal_to_the_total_returning_price_of_each_order_item()
+    public function test_sum_of_installment_prices_must_be_equal_to_the_total_returning_price_of_each_order_item_plus_fixed_parts()
     {
+        Config::set("accounting.delivery", 5000);
+        Config::set("accounting.VAT", 5000);
+
         event(new OrderCreated($this->order->id));
         $orderTotalReturningPrice = $this->order->total_price;
 
@@ -62,10 +66,26 @@ class InstallmentTest extends TestCase
             $price += $installment->total_price;
         }
 
-        $this->assertEquals($orderTotalReturningPrice, $price);
+        $this->assertEquals($orderTotalReturningPrice + 10000, $price);
 
+    }
 
+    public function test_sum_of_installment_details_must_be_equal_to_the_total_order_items_month_count_plus_two()
+    {
+        event(new OrderCreated($this->order->id));
 
+        $month_counts = 0;
+        foreach ($this->order->orderItems as $orderItem){
+            $month_counts += $orderItem->month_count;
+        }
 
+        $installments = $this->order->installments;
+        $count = 0;
+        foreach ($installments as $installment){
+            /** @var Installment $installment */
+            $count += $installment->installmentDetails->count();
+        }
+
+        $this->assertEquals($count - 2 , $month_counts );
     }
 }

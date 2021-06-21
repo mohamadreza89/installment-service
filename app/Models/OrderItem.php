@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property mixed month_count
  * @property mixed price
+ * @property mixed quantity
  */
 class OrderItem extends Model
 {
@@ -34,19 +35,7 @@ class OrderItem extends Model
      */
     public function totalReturningPrice()
     {
-        return bcmul($this->price, 1 + $this->interestRate());
-    }
-
-    /**
-     * Total returning price of an order item considering the VAT and delivery parts
-     *
-     * @return integer
-     */
-    public function totalReturningPriceConsideringExtras()
-    {
-        return bcmul($this->price, 1 + $this->interestRate())
-            + config("accounting.VAT")
-            + config("accounting.delivery");
+        return bcmul(bcmul($this->price, $this->quantity), 1 + $this->interestRate());
     }
 
     /**
@@ -61,17 +50,4 @@ class OrderItem extends Model
         return 0.2;
     }
 
-    /**
-     * The price of the first month is slightly different from other months.
-     * It consists of two elements : VAT and delivery
-     *
-     * @return \Illuminate\Config\Repository|mixed|string|null
-     */
-    public function firstMonthPrice()
-    {
-        return bcdiv($this->totalReturningPrice(), $this->month_count)
-            + config("accounting.VAT")
-            + config("accounting.delivery");
-
-    }
 }

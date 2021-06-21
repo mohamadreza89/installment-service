@@ -23,6 +23,12 @@ class InstallmentService implements InstallmentServiceInterface
         foreach ($this->installmentsArray($orderId) as $installment) {
             $installmentObject = $this->createInstallment($orderId, ++$i);
 
+            if ($installmentObject->turn ==1){
+                $this->createInstallmentDetail($installmentObject, config("accounting.VAT"), "vat");
+                $this->createInstallmentDetail($installmentObject, config("accounting.delivery"), "delivery");
+
+            }
+
             // Here $installment may be an array of prices and each price
             // is for an orderItem.
             // By iterating through installment prices we create installmentDetail
@@ -56,11 +62,11 @@ class InstallmentService implements InstallmentServiceInterface
             /** @var OrderItem $orderItem */
 
             for ($i = 1; $i <= $orderItem->month_count; $i++) {
-
                 /** @var OrderItem $orderItem */
-                $installmentsArray[$i][] = $i==1 ? $orderItem->firstMonthPrice(): $orderItem->monthlyPrice();
+                $installmentsArray[$i][] = $orderItem->monthlyPrice();
             }
         }
+
         return $installmentsArray;
     }
 
@@ -80,13 +86,15 @@ class InstallmentService implements InstallmentServiceInterface
     /**
      * @param $installmentObject
      * @param $price
+     * @param string $type
      * @return InstallmentDetail
      */
-    protected function createInstallmentDetail($installmentObject, $price)
+    protected function createInstallmentDetail($installmentObject, $price, $type = "normal")
     {
         return InstallmentDetail::create([
             "installment_id" => $installmentObject->id,
-            "price" => $price
+            "price" => $price,
+            "installment_type"=> $type
         ]);
     }
 

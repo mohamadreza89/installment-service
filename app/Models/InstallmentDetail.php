@@ -15,5 +15,6 @@ class InstallmentDetail extends Model
     protected $fillable = [
         "installment_id",
         "price",
+        "installment_type"
     ];
 }

@@ -20,9 +20,9 @@ class CreateInstallmentDetailsTable extends Migration
             $table->foreign("installment_id")->references("id")->on("installments");
 
             $table->string("installment_type")->nullable();
-            $table->bigInteger("main")->nullable();
-            $table->bigInteger("vat")->nullable();
-            $table->bigInteger("delivery")->nullable();
+//            $table->bigInteger("main")->nullable();
+//            $table->bigInteger("vat")->nullable();
+//            $table->bigInteger("delivery")->nullable();
             $table->bigInteger("price")->nullable();
             $table->bigInteger("store_id")->nullable();
             $table->timestamps();

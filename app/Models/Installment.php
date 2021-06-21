@@ -18,6 +18,8 @@ class Installment extends Model
         "turn",
     ];
 
+    protected $appends = ["total_price"];
+
     public function installmentDetails()
     {
         return $this->hasMany(InstallmentDetail::class);

@@ -30,7 +30,7 @@ class Order extends Model
         $price = 0;
         foreach ($this->orderItems as $orderItem){
             /** @var OrderItem $orderItem */
-            $price += $orderItem->totalReturningPriceConsideringExtras();
+            $price += $orderItem->totalReturningPrice();
         }
         return $price;
 
