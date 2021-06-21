@@ -44,7 +44,7 @@ class OrderItem extends Model
     protected function interestRate()
     {
         // This code should be something like this :
-        // return $this->order->store->interest_rate;
+        // return $this->store->interest_rate;
 
         //But because we are not going to work store objects we hard code this part
         return 0.2;
