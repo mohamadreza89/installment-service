@@ -175,6 +175,12 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+
+        /*
+         * Low level modules
+         */
+        App\Services\LibServiceProvider::class,
+
     ],
 
     /*

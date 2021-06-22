@@ -8,9 +8,31 @@ use App\Contracts\InstallmentServiceInterface;
 use App\Models\Installment;
 use App\Models\InstallmentDetail;
 use App\Models\OrderItem;
+use App\Services\Contracts\InstallmentCreatorInterface;
+use App\Services\Contracts\InstallmentDetailCreatorInterface;
 
 class InstallmentService implements InstallmentServiceInterface
 {
+    /**
+     * @var InstallmentDetailCreatorInterface
+     */
+    protected $installmentDetailCreator;
+    /**
+     * @var InstallmentCreatorInterface
+     */
+    protected $installmentCreator;
+
+    /**
+     * InstallmentService constructor.
+     * @param InstallmentDetailCreatorInterface $installmentDetailCreator
+     * @param InstallmentCreatorInterface $installmentCreator
+     */
+    public function __construct(InstallmentDetailCreatorInterface $installmentDetailCreator, InstallmentCreatorInterface $installmentCreator)
+    {
+        $this->installmentDetailCreator = $installmentDetailCreator;
+        $this->installmentCreator = $installmentCreator;
+    }
+
     /**
      * Creates Installments and InstallmentDetails based on
      * the given order_id
@@ -21,12 +43,12 @@ class InstallmentService implements InstallmentServiceInterface
     {
         $i = 0;
         foreach ($this->installmentsArray($orderId) as $installment) {
-            $installmentObject = $this->createInstallment($orderId, ++$i);
+            $installmentObject = $this->installmentCreator->create($orderId, ++$i);
 
             // first installment consists of two fixed items : VAT and delivery
             if ($installmentObject->turn ==1){
-                $this->createInstallmentDetail($installmentObject, config("accounting.VAT"), "vat");
-                $this->createInstallmentDetail($installmentObject, config("accounting.delivery"), "delivery");
+                $this->installmentDetailCreator->create($installmentObject->id, config("accounting.VAT"), "vat");
+                $this->installmentDetailCreator->create($installmentObject->id, config("accounting.delivery"), "delivery");
 
             }
 
@@ -35,7 +57,7 @@ class InstallmentService implements InstallmentServiceInterface
             // By iterating through installment prices we create installmentDetail
             // for each price
             foreach ($installment as $price) {
-                $this->createInstallmentDetail($installmentObject, $price);
+                $this->installmentDetailCreator->create($installmentObject->id, $price);
             }
         }
 
@@ -71,32 +93,5 @@ class InstallmentService implements InstallmentServiceInterface
         return $installmentsArray;
     }
 
-    /**
-     * @param $orderId
-     * @param $i
-     * @return mixed
-     */
-    protected function createInstallment($orderId, $i)
-    {
-        return Installment::create([
-            "order_id" => $orderId,
-            "turn" => $i
-        ]);
-    }
-
-    /**
-     * @param $installmentObject
-     * @param $price
-     * @param string $type
-     * @return InstallmentDetail
-     */
-    protected function createInstallmentDetail($installmentObject, $price, $type = "normal")
-    {
-        return InstallmentDetail::create([
-            "installment_id" => $installmentObject->id,
-            "price" => $price,
-            "installment_type"=> $type
-        ]);
-    }
 
 }
