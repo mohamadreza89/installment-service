@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Contracts\InstallmentServiceInterface;
 use App\Contracts\OrderItemRepositoryInterface;
 use App\Models\OrderItem;
+use App\Services\Contracts\InstallmentArrayGeneratorInterface;
 use App\Services\Contracts\InstallmentCreatorInterface;
 use App\Services\Contracts\InstallmentDetailCreatorInterface;
 
@@ -21,23 +22,24 @@ class InstallmentService implements InstallmentServiceInterface
      */
     protected $installmentCreator;
     /**
-     * @var OrderItemRepositoryInterface
+     * @var InstallmentArrayGeneratorInterface
      */
-    protected $orderItemRepository;
+    protected $installmentArrayGenerator;
+
 
     /**
      * InstallmentService constructor.
      * @param InstallmentDetailCreatorInterface $installmentDetailCreator
      * @param InstallmentCreatorInterface $installmentCreator
-     * @param OrderItemRepositoryInterface $orderItemRepository
+     * @param InstallmentArrayGeneratorInterface $installmentArrayGenerator
      */
     public function __construct(InstallmentDetailCreatorInterface $installmentDetailCreator,
                                 InstallmentCreatorInterface $installmentCreator,
-                                OrderItemRepositoryInterface $orderItemRepository)
+                                InstallmentArrayGeneratorInterface $installmentArrayGenerator)
     {
         $this->installmentDetailCreator = $installmentDetailCreator;
         $this->installmentCreator = $installmentCreator;
-        $this->orderItemRepository = $orderItemRepository;
+        $this->installmentArrayGenerator = $installmentArrayGenerator;
     }
 
     /**
@@ -49,7 +51,7 @@ class InstallmentService implements InstallmentServiceInterface
     public function create($orderId)
     {
         $i = 0;
-        foreach ($this->installmentsArray($orderId) as $installment) {
+        foreach ($this->installmentArrayGenerator->generate($orderId) as $installment) {
             $installmentObject = $this->installmentCreator->create($orderId, ++$i, now()->addMonths($i));
 
             // first installment consists of two fixed items : VAT and delivery
@@ -70,26 +72,6 @@ class InstallmentService implements InstallmentServiceInterface
 
     }
 
-    /**
-     * Installments array consists of all of the installment prices array
-     *
-     * @param $orderId
-     * @return array
-     */
-    protected function installmentsArray($orderId)
-    {
-        $installmentsArray = [];
-        foreach ($this->orderItemRepository->orderItems($orderId) as $orderItem) {
-            /** @var OrderItem $orderItem */
-
-            for ($i = 1; $i <= $orderItem->month_count; $i++) {
-                /** @var OrderItem $orderItem */
-                $installmentsArray[$i][] = $orderItem->monthlyPrice();
-            }
-        }
-
-        return $installmentsArray;
-    }
 
 
 }
