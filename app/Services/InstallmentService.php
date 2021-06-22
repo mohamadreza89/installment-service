@@ -5,8 +5,7 @@ namespace App\Services;
 
 
 use App\Contracts\InstallmentServiceInterface;
-use App\Models\Installment;
-use App\Models\InstallmentDetail;
+use App\Contracts\OrderItemRepositoryInterface;
 use App\Models\OrderItem;
 use App\Services\Contracts\InstallmentCreatorInterface;
 use App\Services\Contracts\InstallmentDetailCreatorInterface;
@@ -21,16 +20,24 @@ class InstallmentService implements InstallmentServiceInterface
      * @var InstallmentCreatorInterface
      */
     protected $installmentCreator;
+    /**
+     * @var OrderItemRepositoryInterface
+     */
+    protected $orderItemRepository;
 
     /**
      * InstallmentService constructor.
      * @param InstallmentDetailCreatorInterface $installmentDetailCreator
      * @param InstallmentCreatorInterface $installmentCreator
+     * @param OrderItemRepositoryInterface $orderItemRepository
      */
-    public function __construct(InstallmentDetailCreatorInterface $installmentDetailCreator, InstallmentCreatorInterface $installmentCreator)
+    public function __construct(InstallmentDetailCreatorInterface $installmentDetailCreator,
+                                InstallmentCreatorInterface $installmentCreator,
+                                OrderItemRepositoryInterface $orderItemRepository)
     {
         $this->installmentDetailCreator = $installmentDetailCreator;
         $this->installmentCreator = $installmentCreator;
+        $this->orderItemRepository = $orderItemRepository;
     }
 
     /**
@@ -64,15 +71,6 @@ class InstallmentService implements InstallmentServiceInterface
     }
 
     /**
-     * @param $orderId
-     * @return mixed
-     */
-    protected function orderItems($orderId)
-    {
-        return OrderItem::where("order_id", $orderId)->get();
-    }
-
-    /**
      * Installments array consists of all of the installment prices array
      *
      * @param $orderId
@@ -81,7 +79,7 @@ class InstallmentService implements InstallmentServiceInterface
     protected function installmentsArray($orderId)
     {
         $installmentsArray = [];
-        foreach ($this->orderItems($orderId) as $orderItem) {
+        foreach ($this->orderItemRepository->orderItems($orderId) as $orderItem) {
             /** @var OrderItem $orderItem */
 
             for ($i = 1; $i <= $orderItem->month_count; $i++) {
