@@ -50,7 +50,7 @@ class InstallmentService implements InstallmentServiceInterface
     {
         $i = 0;
         foreach ($this->installmentsArray($orderId) as $installment) {
-            $installmentObject = $this->installmentCreator->create($orderId, ++$i);
+            $installmentObject = $this->installmentCreator->create($orderId, ++$i, now()->addMonths($i));
 
             // first installment consists of two fixed items : VAT and delivery
             if ($installmentObject->turn ==1){

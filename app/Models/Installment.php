@@ -16,6 +16,7 @@ class Installment extends Model
     protected $fillable = [
         "order_id",
         "turn",
+        "due_date"
     ];
 
     protected $appends = ["total_price"];

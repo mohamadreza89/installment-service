@@ -6,6 +6,6 @@ namespace App\Services\Contracts;
 
 interface InstallmentCreatorInterface
 {
-    public function create($order_id, $turn);
+    public function create($order_id, $turn, $date);
 
 }

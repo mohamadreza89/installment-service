@@ -20,7 +20,7 @@ class CreateInstallmentsTable extends Migration
             $table->foreign("order_id")->on("orders")->references("id");
 
             //$table->bigInteger("total_price");
-            $table->string("period_date")->nullable();
+            $table->string("due_date")->nullable();
 
             $table->integer("turn");
 
