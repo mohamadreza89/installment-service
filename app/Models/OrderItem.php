@@ -14,6 +14,7 @@ class OrderItem extends Model
 {
     use HasFactory;
 
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -21,6 +22,7 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Order::class);
     }
+
 
     /**
      * @return string|null
@@ -44,10 +46,12 @@ class OrderItem extends Model
     protected function interestRate()
     {
         // This code should be something like this :
-        // return $this->store->interest_rate;
+        // $this->store->interest_rate;
 
-        //But because we are not going to work store objects we hard code this part
-        return 0.2;
+        // But temporarily I write it this way
+        return Store::make()->interestRate();
+
+
     }
 
 }
